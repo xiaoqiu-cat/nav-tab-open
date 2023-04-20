@@ -1,15 +1,24 @@
 {
   "name": "nav-tab-open",
-  "version": "0.1.2",
-  "description": "基于vue2的导航tab组件",
+  "version": "0.1.4",
+  "description": "导航tab组件",
   "main": "dist/nav-tab-open.umd.min.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xiaoqiu-cat/nav-tab-open"
+  },
+  "keywords": [
+    "vue",
+    "element-ui",
+    "nav-tab"
+  ],
   "files":[
     "dist"
   ],
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "build:nav": "vue-cli-service build --mode prod --target lib src/components/index.js ",
+    "build:vue2": "vue-cli-service build --mode prod --target lib src/components/index.js ",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

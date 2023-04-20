@@ -1,2 +1,4 @@
 import FormValid from './FormValid'
-export { FormValid }
+import NavTab from './NavTab'
+
+export { FormValid,NavTab }
