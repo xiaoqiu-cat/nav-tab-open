@@ -1,6 +1,6 @@
 {
   "name": "nav-tab-open",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "导航tab组件",
   "main": "dist/nav-tab-open.umd.min.js",
   "repository": {
