@@ -1,18 +1,17 @@
 <template>
   <div class="demo-wrapper">
-    
+    <nav-tab></nav-tab>
   </div>
 </template>
 
 <script>
 export default {
-  name: "demo_index",
-  data() {
+  name: 'demoIndex',
+  data () {
     return {
-      msg: 'Hello World'
     }
   },
-  mounted() {
+  mounted () {
     console.log('mounted')
   },
   methods: {

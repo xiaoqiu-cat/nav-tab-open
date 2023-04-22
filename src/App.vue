@@ -1,18 +1,16 @@
 <template>
   <div id="app">
-    <div>
-      <h1>vue2_comm_open</h1>
-    </div>
-    vue2_comm_open
+    <demo></demo>
   </div>
 </template>
 <script>
+import Demo from './demo/index.vue'
 export default {
   name: 'App',
-  mounted () {
-    console.log('vue2_comm_open')
-  },
   components: {
+    Demo
+  },
+  mounted () {
   }
 }
 </script>
