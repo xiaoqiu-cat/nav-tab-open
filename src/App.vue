@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <div>
+      <h1>vue2_comm_open</h1>
+    </div>
     vue2_comm_open
   </div>
 </template>
@@ -13,3 +16,6 @@ export default {
   }
 }
 </script>
+<style>
+
+</style>
