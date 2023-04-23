@@ -2,6 +2,8 @@
   "name": "nav-tab-open",
   "version": "0.1.6",
   "description": "导航tab组件",
+  "author": "LIU CHAOFEI",
+  "license": "MIT",
   "main": "dist/nav-tab-open.umd.min.js",
   "repository": {
     "type": "git",
