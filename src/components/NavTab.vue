@@ -3,7 +3,12 @@
     <div class="nav-wrapper">
       <div class="nav-show">
         <ul>
-          <li v-for="(item,idx) in menuList" :key="idx" :id="`li-${idx}`">
+          <li
+            v-for="(item,idx) in menuList"
+            :key="idx"
+            :id="`li-${item.id}`"
+            :class="{'active': currentTab.path === item.path}"
+          >
             <span class="tab-name" @click="handleTabClick(item,idx)">{{ item.name }}</span>
             <i class="close-btn" @click="handleClose(item)">+</i>
           </li>
@@ -28,6 +33,7 @@
 </template>
 
 <script>
+import { makeRandomId } from '@/utils/index'
 export default {
   name: 'NavTab',
   data () {
@@ -38,14 +44,17 @@ export default {
       },
       menuList: [
         {
+          id: 1,
           name: '首页',
           path: '/home'
         },
         {
+          id: 2,
           name: '产品',
           path: '/product'
         },
         {
+          id: 3,
           name: '关于我们',
           path: '/about'
         }
@@ -72,9 +81,14 @@ export default {
           console.log('changeWidth', changeWidth)
           if (intVal < 0) {
             this.collapseMenuList.push(val[val.length - 1])
+            const lastItem = val[val.length - 1]
+            console.log('lastItem', lastItem)
             this.menuList.pop()
-            this.changeWidth = this.changeWidth - document.getElementById('li-' + (val.length - 1)).clientWidth
+            this.changeWidth = this.changeWidth - document.getElementById('li-' +
+            lastItem.id).clientWidth
             console.log('超出了')
+          } else {
+            this.changeWidth = document.querySelector('.nav-show').clientWidth
           }
         })
       },
@@ -93,6 +107,7 @@ export default {
         this.menuList.splice(idx, 1)
         if (this.menuList.length === 0) {
           this.menuList.push({
+            id: 1,
             name: '首页',
             path: '/home'
           })
@@ -102,17 +117,18 @@ export default {
       }
     },
     handleAdd () {
-      const len = this.menuList.length
-      this.menuList.push({
-        name: '测试' + len,
-        path: '/test' + len
-      })
-      this.currentTab = {
+      const len = makeRandomId()
+      const item = {
+        id: len,
         name: '测试' + len,
         path: '/test' + len
       }
+      this.menuList.push(item)
+      this.currentTab = item
       this.$nextTick(() => {
-        const navDom = document.getElementById('li-' + len)
+        console.log('item', item)
+        const navDom = document.getElementById('li-' + item.id)
+        console.log('navDom', navDom)
         this.changeWidth = this.changeWidth + navDom.clientWidth
       })
     }
@@ -179,6 +195,15 @@ export default {
             }
           }
         }
+        li.active{
+          border: 1px solid #2c7ceb;
+          .tab-name{
+            color: #2c7ceb;
+          }
+          .close-btn{
+            color: #2c7ceb;
+          }
+        }
       }
     }
     .nav-collapse{
@@ -193,6 +218,7 @@ export default {
   }
   .tab-content{
     margin: 30px;
+    color: #2c7ceb;
   }
   .plus-tab{
     display: inline-block;
