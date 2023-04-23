@@ -47,17 +47,17 @@ export default {
           id: 1,
           name: '首页',
           path: '/home'
-        },
-        {
-          id: 2,
-          name: '产品',
-          path: '/product'
-        },
-        {
-          id: 3,
-          name: '关于我们',
-          path: '/about'
         }
+        // {
+        //   id: 2,
+        //   name: '产品',
+        //   path: '/product'
+        // },
+        // {
+        //   id: 3,
+        //   name: '关于我们',
+        //   path: '/about'
+        // }
       ],
       changeWidth: 0,
       showMenuList: [],
@@ -107,7 +107,7 @@ export default {
         this.menuList.splice(idx, 1)
         if (this.menuList.length === 0) {
           this.menuList.push({
-            id: 1,
+            id: 0,
             name: '首页',
             path: '/home'
           })
