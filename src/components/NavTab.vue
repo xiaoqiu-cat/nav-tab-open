@@ -4,31 +4,43 @@
       <div class="nav-show">
         <ul>
           <li
-            v-for="(item,idx) in menuList"
+            v-for="(item, idx) in menuList"
             :key="idx"
             :id="`li-${item.id}`"
-            :class="{'active': currentTab.path === item.path}"
+            :class="{ active: currentTab.path === item.path }"
           >
-            <span class="tab-name" @click="handleTabClick(item,idx)">{{ item.name }}</span>
+            <span class="tab-name" @click="handleTabClick(item, idx)">{{
+              item.name
+            }}</span>
             <i class="close-btn" @click="handleClose(item)">+</i>
           </li>
         </ul>
       </div>
       <div class="nav-collapse" v-show="collapseMenuList.length">
-        <ul>
-          <li v-for="(item,idx) in collapseMenuList" :key="idx" :id="`li-${idx}`">
-            <span class="tab-name" @click="handleTabClick(item,idx)">{{ item.name }}</span>
-            <i class="close-btn" @click="handleClose(item)">+</i>
-          </li>
-        </ul>
+        <div class="apse-ul">
+          <div
+            class="apse-li-wrapper"
+            v-for="(item, idx) in collapseMenuList"
+            :key="idx"
+            :id="`li-${idx}`"
+          >
+            <div
+              class="apse-li"
+              :class="{ active: currentTab.path === item.path }"
+            >
+              <span class="tab-name" @click="handleTabCollapseClick(item)">{{
+                item.name
+              }}</span>
+              <i class="close-btn" @click="handleCollapseClose(item)">+</i>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="tab-content">
       {{ currentTab.name }}
     </div>
-    <div class="plus-tab" @click="handleAdd">
-      打开新的tab
-    </div>
+    <div class="plus-tab" @click="handleAdd">打开新的tab</div>
   </div>
 </template>
 
@@ -68,6 +80,7 @@ export default {
     this.$nextTick(() => {
       this.changeWidth = document.querySelector('.nav-show').clientWidth
     })
+    window.addEventListener('resize', this.onresize)
   },
   watch: {
     menuList: {
@@ -80,27 +93,59 @@ export default {
           console.log('initWidth', initWidth)
           console.log('changeWidth', changeWidth)
           if (intVal < 0) {
-            this.collapseMenuList.push(val[val.length - 1])
+            this.collapseMenuList.push(val[val.length - 2])
             const lastItem = val[val.length - 1]
             console.log('lastItem', lastItem)
-            this.menuList.pop()
-            this.changeWidth = this.changeWidth - document.getElementById('li-' +
-            lastItem.id).clientWidth
+            this.menuList.splice(val.length - 2, 1)
+            this.changeWidth =
+              this.changeWidth -
+              document.getElementById('li-' + lastItem.id).clientWidth
             console.log('超出了')
           } else {
             this.changeWidth = document.querySelector('.nav-show').clientWidth
           }
         })
       },
+
       immediate: true
     }
   },
   methods: {
+    onresize () {
+      const newWidth = document.querySelector('.nav-show').clientWidth
+      const val = this.menuList
+      const navDom = document.querySelector('.nav-wrapper')
+      const initWidth = navDom.clientWidth
+      const changeWidth = newWidth
+      const intVal = initWidth - changeWidth
+      console.log('initWidth', initWidth)
+      console.log('changeWidth', changeWidth)
+      console.log('intVal', intVal)
+      if (intVal <= 0) {
+        this.collapseMenuList.push(val[val.length - 2])
+        const lastItem = val[val.length - 1]
+        console.log('lastItem', lastItem)
+        this.menuList.splice(val.length - 2, 1)
+        this.changeWidth =
+          this.changeWidth -
+          document.getElementById('li-' + lastItem.id).clientWidth
+        console.log('超出了')
+      } else {
+        const ulWidth = document.querySelector('.apse-ul').clientWidth
+        if (intVal > ulWidth) {
+          const first = this.collapseMenuList.shift()
+          if (first) {
+            this.menuList.push(first)
+          }
+          this.changeWidth = document.querySelector('.nav-show').clientWidth
+        }
+      }
+    },
     handleTabClick (item, idx) {
       this.currentTab = item
     },
     handleClose (item) {
-      const idx = this.menuList.findIndex(v => {
+      const idx = this.menuList.findIndex((v) => {
         return v.path === item.path
       })
       if (idx !== -1) {
@@ -113,7 +158,39 @@ export default {
           })
           return
         }
+        const first = this.collapseMenuList.shift()
+        if (first) {
+          this.menuList.push(first)
+          this.currentTab = first
+          // this.$nextTick(() => {
+          //   console.log('item', first)
+          //   const navDom = document.getElementById('li-' + first.id)
+          //   console.log('navDom', navDom)
+          //   this.changeWidth = this.changeWidth + navDom.clientWidth
+          // })
+          return
+        }
         this.currentTab = this.menuList[this.menuList.length - 1]
+      }
+    },
+    handleCollapseClose (item) {
+      const idx = this.collapseMenuList.findIndex((v) => {
+        return v.path === item.path
+      })
+      if (idx !== -1) {
+        this.collapseMenuList.splice(idx, 1)
+      }
+    },
+    handleTabCollapseClick (item) {
+      const idx = this.collapseMenuList.findIndex((v) => {
+        return v.path === item.path
+      })
+      if (idx !== -1) {
+        this.collapseMenuList.splice(idx, 1)
+        const last = this.menuList.pop()
+        this.collapseMenuList.unshift(last)
+        this.menuList.push(item)
+        this.currentTab = item
       }
     },
     handleAdd () {
@@ -141,23 +218,26 @@ export default {
   width: 100%;
   height: 100%;
   background-color: #fff;
-  .nav-wrapper{
+
+  .nav-wrapper {
     position: relative;
     width: 100%;
     height: 100%;
+
     // border: 1px solid blue;
-    .nav-show{
+    .nav-show {
       height: 100%;
       display: inline-block;
+
       // border: 1px solid red;
-      ul{
+      ul {
         height: 100%;
         // border: 1px solid yellow;
         display: inline-block;
         display: flex;
         flex-wrap: wrap;
-        border: 1px solid red;
-        li{
+
+        li {
           height: 100%;
           border: 1px solid #ddd;
           display: inline-block;
@@ -165,22 +245,27 @@ export default {
           display: flex;
           align-items: center;
           flex-shrink: 0;
-          &:hover{
+
+          &:hover {
             border: 1px solid #2c7ceb;
-            .tab-name{
+
+            .tab-name {
               color: #2c7ceb;
             }
-            .close-btn{
+
+            .close-btn {
               color: #2c7ceb;
             }
           }
-          .tab-name{
+
+          .tab-name {
             display: inline-block;
             height: 100%;
             text-align: center;
             cursor: pointer;
           }
-          .close-btn{
+
+          .close-btn {
             display: block;
             width: 25px;
             height: 25px;
@@ -190,37 +275,104 @@ export default {
             cursor: pointer;
             color: #ccc;
             margin-left: 5px;
-            &:hover{
+
+            &:hover {
               color: #2c7ceb;
             }
           }
         }
-        li.active{
+
+        li.active {
           border: 1px solid #2c7ceb;
-          .tab-name{
+
+          .tab-name {
             color: #2c7ceb;
           }
-          .close-btn{
+
+          .close-btn {
             color: #2c7ceb;
           }
         }
       }
     }
-    .nav-collapse{
+
+    .nav-collapse {
       position: absolute;
-      min-width: 150px;
-      height: 50px;
       right: 0px;
       top: 30px;
-      border: 1px solid red;
-      // border: 1px solid green;
+      border: 1px solid green;
+
+      .apse-ul {
+        display: flex;
+        flex-direction: column;
+
+        .apse-li-wrapper {
+          display: flex;
+          flex-wrap: wrap;
+
+          .apse-li {
+            border: 1px solid red;
+            display: flex;
+            align-items: center;
+            padding-left: 5px;
+
+            &:hover {
+              border: 1px solid #2c7ceb;
+
+              .tab-name {
+                color: #2c7ceb;
+              }
+
+              .close-btn {
+                color: #2c7ceb;
+              }
+            }
+
+            .tab-name {
+              display: block;
+              text-align: center;
+              cursor: pointer;
+            }
+
+            .close-btn {
+              display: block;
+              width: 25px;
+              height: 25px;
+              font-size: 25px;
+              text-align: center;
+              transform: rotateZ(-45deg);
+              cursor: pointer;
+              color: #ccc;
+              margin-left: 5px;
+
+              &:hover {
+                color: #2c7ceb;
+              }
+            }
+          }
+
+          div.active {
+            border: 1px solid #2c7ceb;
+
+            .tab-name {
+              color: #2c7ceb;
+            }
+
+            .close-btn {
+              color: #2c7ceb;
+            }
+          }
+        }
+      }
     }
   }
-  .tab-content{
+
+  .tab-content {
     margin: 30px;
     color: #2c7ceb;
   }
-  .plus-tab{
+
+  .plus-tab {
     display: inline-block;
     padding: 3px;
     border: 1px solid #ddd;
