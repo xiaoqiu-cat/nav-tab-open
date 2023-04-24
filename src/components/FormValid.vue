@@ -1,288 +1,319 @@
 <template>
   <div class="full-page">
-    <el-form ref="elForm" class="add-from-container" :model="addtableData" :rules="elFormRules" size="small" :inline="true">
+    <el-form
+      ref="elForm"
+      class="add-from-container"
+      :model="addtableData"
+      :rules="elFormRules"
+      size="small"
+      :inline="true"
+    >
+      <el-table
+        :data="addtableData.ajustData"
+        row-key="id"
+        :show-header="true"
+        :expand-row-keys="expandRowKeys"
+        :row-class-name="rowClassName"
+        :cell-class-name="
+          ({ row }) =>
+            row.childrens && row.childrens.length ? 'has-children' : ''
+        "
+        @selection-change="handleAddSelection"
+        height="450"
+      >
+        <el-table-column type="expand">
+          <template slot-scope="props">
             <el-table
-                :data="addtableData.ajustData"
-                row-key="id"
-                :show-header="true"
-                :expand-row-keys="expandRowKeys"
-                :row-class-name="rowClassName"
-                :cell-class-name="({row})=>row.childrens && row.childrens.length ? 'has-children' : ''"
-                @selection-change="handleAddSelection"
-                height="450"
+              :show-header="false"
+              :data="props.row.childrens"
+              :border="false"
             >
-                <el-table-column type="expand">
-                    <template slot-scope="props" >
-                        <el-table
-                            :show-header="false"
-                            :data="props.row.childrens"
-                            :border="false"
+              <el-table-column
+                v-for="(item, idx) in tabHeader"
+                :key="idx"
+                :prop="item.prop"
+                :label="item.label"
+              >
+                <template slot-scope="scope">
+                  <template v-if="scope.row.type === 1">
+                    <template v-if="item.prop === 'type'">
+                      <el-tag type="success">新</el-tag>
+                    </template>
+                    <template v-else-if="item.prop === 'name'">
+                      <el-form-item
+                        :prop="item.prop"
+                        :error="scope.row.nameError"
+                      >
+                        <el-input
+                          v-model="scope.row.name"
+                          @input="
+                            onExchange({
+                              currentIndex: scope.$index,
+                              currentRow: scope.row,
+                              fieldName: 'name',
+                              parentIndex: props.$index,
+                              parentRow: props.row,
+                            })
+                          "
+                          clearable
+                        ></el-input>
+                        <div style="display: none">
+                          {{ props.row.childrens[0].errorMsg }}
+                        </div>
+                      </el-form-item>
+                    </template>
+                    <template v-else-if="item.prop === 'level'">
+                      <el-form-item
+                        :prop="item.prop"
+                        :error="scope.row.levelError"
+                      >
+                        <el-select
+                          v-model="scope.row.level"
+                          @change="
+                            onExchange({
+                              currentIndex: scope.$index,
+                              currentRow: scope.row,
+                              fieldName: 'level',
+                              parentIndex: props.$index,
+                              parentRow: props.row,
+                            })
+                          "
+                          clearable
                         >
-                            <el-table-column
-                                v-for="(item,idx) in tabHeader"
-                                :key="idx"
-                                :prop="item.prop"
-                                :label="item.label"
-                            >
-                                <template slot-scope="scope">
-                                    <template v-if="scope.row.type === 1">
-                                        <template v-if="item.prop === 'type'">
-                                            <el-tag  type="success">新</el-tag>
-                                        </template>
-                                        <template v-else-if="item.prop === 'name'">
-                                            <el-form-item
-                                                :prop="item.prop"
-                                                :error="scope.row.nameError"
-                                            >
-                                                <el-input
-                                                    v-model="scope.row.name"
-                                                    @input="onExchange({
-                                                        currentIndex: scope.$index,
-                                                        currentRow: scope.row,
-                                                        fieldName: 'name',
-                                                        parentIndex: props.$index,
-                                                        parentRow: props.row
-                                                    })"
-                                                    clearable
-                                                    ></el-input>
-                                                    <div style="display:none">{{props.row.childrens[0].errorMsg}}</div>
-                                            </el-form-item>
-                                        </template>
-                                        <template v-else-if="item.prop === 'level'">
-                                            <el-form-item
-                                                :prop="item.prop"
-                                                :error="scope.row.levelError"
-                                            >
-                                                <el-select
-                                                    v-model="scope.row.level"
-                                                    @change="onExchange({
-                                                        currentIndex: scope.$index,
-                                                        currentRow: scope.row,
-                                                        fieldName: 'level',
-                                                        parentIndex: props.$index,
-                                                        parentRow: props.row
-                                                    })"
-                                                    clearable>
-                                                    <el-option value="实施性施工组织总设计"></el-option>
-                                                </el-select>
-                                            </el-form-item>
-                                        </template>
-                                        <template v-else-if="item.prop === 'target'">
-                                            <el-form-item
-                                                :prop="item.prop"
-                                                :error="scope.row.targetError"
-                                            >
-                                                <el-select
-                                                    v-model="scope.row.target"
-                                                    @change="onExchange({
-                                                        currentIndex: scope.$index,
-                                                        currentRow: scope.row,
-                                                        fieldName: 'target',
-                                                        parentIndex: props.$index,
-                                                        parentRow: props.row
-                                                    })"
-                                                    clearable
-                                                >
-                                                    <el-option value="经过专家论证"></el-option>
-                                                </el-select>
-                                            </el-form-item>
-                                        </template>
-                                        <template v-else-if="item.prop === 'plan_time'">
-                                            <el-form-item
-                                                :prop="item.prop"
-                                                :error="scope.row.plan_timeError"
-                                            >
-                                                <el-date-picker
-                                                    clearable
-                                                    size="small"
-                                                    style="width:150px;"
-                                                    v-model="scope.row.plan_time"
-                                                    @change="onExchange({
-                                                        currentIndex: scope.$index,
-                                                        currentRow: scope.row,
-                                                        fieldName: 'plan_time',
-                                                        parentIndex: props.$index,
-                                                        parentRow: props.row
-                                                    })"
-                                                ></el-date-picker>
-                                            </el-form-item>
-                                        </template>
-                                        <template v-else-if="item.prop === 'person'">
-                                            <el-form-item
-                                                :prop="item.prop"
-                                                :error="scope.row.personError"
-                                            >
-                                                <el-input
-                                                    v-model="scope.row.person"
-                                                    @input="onExchange({
-                                                        currentIndex: scope.$index,
-                                                        currentRow: scope.row,
-                                                        fieldName: 'person',
-                                                        parentIndex: props.$index,
-                                                        parentRow: props.row
-                                                    })"
-                                                    clearable
-                                                    ></el-input>
-                                            </el-form-item>
-                                        </template>
-                                        <template v-else-if="item.prop === 'opration'">
-                                            <el-button type="primary" @click="handleRowValid({
-                                                currentIndex: scope.$index,
-                                                currentRow: scope.row,
-                                                parentIndex: props.$index,
-                                                parentRow: props.row
-                                            })">单行验证</el-button>
-                                        </template>
-                                        <template v-else >
-                                        {{scope.row[item.prop]}}
-                                        </template>
-                                    </template>
-                                    <template v-else>
-                                        <span v-if="item.prop === 'type'">
-                                            <el-tag  type="info">旧</el-tag>
-                                        </span>
-                                        <span v-else>{{scope.row[item.prop]}}</span>
-                                    </template>
-                                </template>
-                            </el-table-column>
-                        </el-table>
+                          <el-option value="实施性施工组织总设计"></el-option>
+                        </el-select>
+                      </el-form-item>
                     </template>
-                </el-table-column>
-                <el-table-column
-                    v-for="(item,idx) in tabHeader"
-                    :key="idx"
-                    :prop="item.prop"
-                    :label="item.label"
-                    :align="item.align"
-                    :width="item.width"
-                    :show-overflow-tooltip="item.toolitp"
-                >
-                    <template slot-scope="scope">
-                        <template v-if="scope.row.type === 1">
-                            <template v-if="item.prop === 'type'">
-                                <el-tag  type="success">新</el-tag>
-                            </template>
-                            <template v-else-if="item.prop === 'name'">
-                                <el-form-item
-                                    :prop="item.prop"
-                                    :error="scope.row.nameError"
-                                >
-                                    <el-input
-                                        v-model="scope.row.name"
-                                        @input="onExchange({
-                                            currentIndex: scope.$index,
-                                            currentRow: scope.row,
-                                            fieldName: 'name',
-                                            parentIndex: null,
-                                            parentRow: null
-                                        })"
-                                        clearable
-                                        ></el-input>
-                                </el-form-item>
-                            </template>
-                            <template v-else-if="item.prop === 'level'">
-                                <el-form-item
-                                    :prop="item.prop"
-                                    :error="scope.row.levelError"
-                                >
-                                    <el-select
-                                        v-model="scope.row.level"
-                                        @change="onExchange({
-                                            currentIndex: scope.$index,
-                                            currentRow: scope.row,
-                                            fieldName: 'level',
-                                            parentIndex: null,
-                                            parentRow: null
-                                        })"
-                                        clearable>
-                                        <el-option value="实施性施工组织总设计"></el-option>
-                                    </el-select>
-                                </el-form-item>
-                            </template>
-                            <template v-else-if="item.prop === 'target'">
-                                <el-form-item
-                                    :prop="item.prop"
-                                    :error="scope.row.targetError"
-                                >
-                                    <el-select
-                                        v-model="scope.row.target"
-                                        @change="onExchange({
-                                            currentIndex: scope.$index,
-                                            currentRow: scope.row,
-                                            fieldName: 'target',
-                                            parentIndex: null,
-                                            parentRow: null
-                                        })"
-                                        clearable
-                                    >
-                                        <el-option value="经过专家论证"></el-option>
-                                    </el-select>
-                                </el-form-item>
-                            </template>
-                            <template v-else-if="item.prop === 'plan_time'">
-                                <el-form-item
-                                    :prop="item.prop"
-                                    :error="scope.row.plan_timeError"
-                                >
-                                    <el-date-picker
-                                        clearable
-                                        size="small"
-                                        style="width:150px;"
-                                        v-model="scope.row.plan_time"
-                                        @change="onExchange({
-                                            currentIndex: scope.$index,
-                                            currentRow: scope.row,
-                                            fieldName: 'plan_time',
-                                            parentIndex: null,
-                                            parentRow: null
-                                        })"
-                                    ></el-date-picker>
-                                </el-form-item>
-                            </template>
-                            <template v-else-if="item.prop === 'person'">
-                                <el-form-item
-                                    :prop="item.prop"
-                                    :error="scope.row.personError"
-                                >
-                                    <el-input
-                                        v-model="scope.row.person"
-                                        @input="onExchange({
-                                            currentIndex: scope.$index,
-                                            currentRow: scope.row,
-                                            fieldName: 'person',
-                                            parentIndex: null,
-                                            parentRow: null
-                                        })"
-                                        clearable
-                                        ></el-input>
-                                </el-form-item>
-                            </template>
-                            <template v-else-if="item.prop === 'opration'">
-                                <el-button type="primary" @click="handleRowValid({
-                                    currentIndex: scope.$index,
-                                    currentRow: scope.row,
-                                    parentIndex: null,
-                                    parentRow: null
-                                })">单行验证</el-button>
-                            </template>
-                            <template v-else >
-                            {{scope.row[item.prop]}}
-                            </template>
-                        </template>
-                        <template v-else>
-                            <span v-if="item.prop === 'type'">
-                                <el-tag  type="info">旧</el-tag>
-                            </span>
-                            <span v-else>{{scope.row[item.prop]}}</span>
-                        </template>
+                    <template v-else-if="item.prop === 'target'">
+                      <el-form-item
+                        :prop="item.prop"
+                        :error="scope.row.targetError"
+                      >
+                        <el-select
+                          v-model="scope.row.target"
+                          @change="
+                            onExchange({
+                              currentIndex: scope.$index,
+                              currentRow: scope.row,
+                              fieldName: 'target',
+                              parentIndex: props.$index,
+                              parentRow: props.row,
+                            })
+                          "
+                          clearable
+                        >
+                          <el-option value="经过专家论证"></el-option>
+                        </el-select>
+                      </el-form-item>
                     </template>
-                </el-table-column>
+                    <template v-else-if="item.prop === 'plan_time'">
+                      <el-form-item
+                        :prop="item.prop"
+                        :error="scope.row.plan_timeError"
+                      >
+                        <el-date-picker
+                          clearable
+                          size="small"
+                          style="width: 150px"
+                          v-model="scope.row.plan_time"
+                          @change="
+                            onExchange({
+                              currentIndex: scope.$index,
+                              currentRow: scope.row,
+                              fieldName: 'plan_time',
+                              parentIndex: props.$index,
+                              parentRow: props.row,
+                            })
+                          "
+                        ></el-date-picker>
+                      </el-form-item>
+                    </template>
+                    <template v-else-if="item.prop === 'person'">
+                      <el-form-item
+                        :prop="item.prop"
+                        :error="scope.row.personError"
+                      >
+                        <el-input
+                          v-model="scope.row.person"
+                          @input="
+                            onExchange({
+                              currentIndex: scope.$index,
+                              currentRow: scope.row,
+                              fieldName: 'person',
+                              parentIndex: props.$index,
+                              parentRow: props.row,
+                            })
+                          "
+                          clearable
+                        ></el-input>
+                      </el-form-item>
+                    </template>
+                    <template v-else-if="item.prop === 'opration'">
+                      <el-button
+                        type="primary"
+                        @click="
+                          handleRowValid({
+                            currentIndex: scope.$index,
+                            currentRow: scope.row,
+                            parentIndex: props.$index,
+                            parentRow: props.row,
+                          })
+                        "
+                        >单行验证</el-button
+                      >
+                    </template>
+                    <template v-else>
+                      {{ scope.row[item.prop] }}
+                    </template>
+                  </template>
+                  <template v-else>
+                    <span v-if="item.prop === 'type'">
+                      <el-tag type="info">旧</el-tag>
+                    </span>
+                    <span v-else>{{ scope.row[item.prop] }}</span>
+                  </template>
+                </template>
+              </el-table-column>
             </el-table>
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-for="(item, idx) in tabHeader"
+          :key="idx"
+          :prop="item.prop"
+          :label="item.label"
+          :align="item.align"
+          :width="item.width"
+          :show-overflow-tooltip="item.toolitp"
+        >
+          <template slot-scope="scope">
+            <template v-if="scope.row.type === 1">
+              <template v-if="item.prop === 'type'">
+                <el-tag type="success">新</el-tag>
+              </template>
+              <template v-else-if="item.prop === 'name'">
+                <el-form-item :prop="item.prop" :error="scope.row.nameError">
+                  <el-input
+                    v-model="scope.row.name"
+                    @input="
+                      onExchange({
+                        currentIndex: scope.$index,
+                        currentRow: scope.row,
+                        fieldName: 'name',
+                        parentIndex: null,
+                        parentRow: null,
+                      })
+                    "
+                    clearable
+                  ></el-input>
+                </el-form-item>
+              </template>
+              <template v-else-if="item.prop === 'level'">
+                <el-form-item :prop="item.prop" :error="scope.row.levelError">
+                  <el-select
+                    v-model="scope.row.level"
+                    @change="
+                      onExchange({
+                        currentIndex: scope.$index,
+                        currentRow: scope.row,
+                        fieldName: 'level',
+                        parentIndex: null,
+                        parentRow: null,
+                      })
+                    "
+                    clearable
+                  >
+                    <el-option value="实施性施工组织总设计"></el-option>
+                  </el-select>
+                </el-form-item>
+              </template>
+              <template v-else-if="item.prop === 'target'">
+                <el-form-item :prop="item.prop" :error="scope.row.targetError">
+                  <el-select
+                    v-model="scope.row.target"
+                    @change="
+                      onExchange({
+                        currentIndex: scope.$index,
+                        currentRow: scope.row,
+                        fieldName: 'target',
+                        parentIndex: null,
+                        parentRow: null,
+                      })
+                    "
+                    clearable
+                  >
+                    <el-option value="经过专家论证"></el-option>
+                  </el-select>
+                </el-form-item>
+              </template>
+              <template v-else-if="item.prop === 'plan_time'">
+                <el-form-item
+                  :prop="item.prop"
+                  :error="scope.row.plan_timeError"
+                >
+                  <el-date-picker
+                    clearable
+                    size="small"
+                    style="width: 150px"
+                    v-model="scope.row.plan_time"
+                    @change="
+                      onExchange({
+                        currentIndex: scope.$index,
+                        currentRow: scope.row,
+                        fieldName: 'plan_time',
+                        parentIndex: null,
+                        parentRow: null,
+                      })
+                    "
+                  ></el-date-picker>
+                </el-form-item>
+              </template>
+              <template v-else-if="item.prop === 'person'">
+                <el-form-item :prop="item.prop" :error="scope.row.personError">
+                  <el-input
+                    v-model="scope.row.person"
+                    @input="
+                      onExchange({
+                        currentIndex: scope.$index,
+                        currentRow: scope.row,
+                        fieldName: 'person',
+                        parentIndex: null,
+                        parentRow: null,
+                      })
+                    "
+                    clearable
+                  ></el-input>
+                </el-form-item>
+              </template>
+              <template v-else-if="item.prop === 'opration'">
+                <el-button
+                  type="primary"
+                  @click="
+                    handleRowValid({
+                      currentIndex: scope.$index,
+                      currentRow: scope.row,
+                      parentIndex: null,
+                      parentRow: null,
+                    })
+                  "
+                  >单行验证</el-button
+                >
+              </template>
+              <template v-else>
+                {{ scope.row[item.prop] }}
+              </template>
+            </template>
+            <template v-else>
+              <span v-if="item.prop === 'type'">
+                <el-tag type="info">旧</el-tag>
+              </span>
+              <span v-else>{{ scope.row[item.prop] }}</span>
+            </template>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-form>
-    <el-button
-        type="primary"
-        @click="handleValid"
-    >整个表单验证</el-button>
+    <el-button type="primary" @click="handleValid">整个表单验证</el-button>
   </div>
 </template>
 
@@ -399,9 +430,9 @@ export default {
     }
   },
   methods: {
-    handleAddSelection () {},
+    handleAddSelection () { },
     rowClassName (row) {
-      if (row.row.childrens.length == 0) {
+      if (row.row.childrens.length === 0) {
         return 'row-expand-cover'
       }
       return 'test'
@@ -419,32 +450,32 @@ export default {
       }
       const name = fieldName
       const row = currentRow
-      if (name == 'name') {
-        if (row.name == '') {
+      if (name === 'name') {
+        if (row.name === '') {
           row.nameError = '方案名称不能为空'
         } else {
           row.nameError = ''
         }
-      } else if (name == 'level') {
-        if (row.level == '') {
+      } else if (name === 'level') {
+        if (row.level === '') {
           row.levelError = '请选择方案等级'
         } else {
           row.levelError = ''
         }
-      } else if (name == 'target') {
-        if (row.target == '') {
+      } else if (name === 'target') {
+        if (row.target === '') {
           row.targetError = '请选择量化指标'
         } else {
           row.targetError = ''
         }
-      } else if (name == 'plan_time') {
-        if (row.plan_time == '') {
+      } else if (name === 'plan_time') {
+        if (row.plan_time === '') {
           row.plan_timeError = '请选择计划上报时间'
         } else {
           row.plan_timeError = ''
         }
-      } else if (name == 'person') {
-        if (row.person == '') {
+      } else if (name === 'person') {
+        if (row.person === '') {
           row.personError = '编制人不能为空'
         } else {
           row.personError = ''
@@ -535,20 +566,20 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.full-page{
-    .has-children{
-        text-align: right;
-    }
+.full-page {
+  .has-children {
+    text-align: right;
+  }
 }
-.add-from-container{
-    border: 1px solid #f5f5f5;
-    padding: 20px;
-    margin: 20px;
+.add-from-container {
+  border: 1px solid #f5f5f5;
+  padding: 20px;
+  margin: 20px;
 }
 /deep/ .el-table .row-expand-cover .cell .el-table__expand-icon {
   display: none;
 }
-/deep/ .el-table__expanded-cell{
-    padding-left: 100px !important;
+/deep/ .el-table__expanded-cell {
+  padding-left: 100px !important;
 }
 </style>

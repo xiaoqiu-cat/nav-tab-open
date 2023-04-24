@@ -140,6 +140,12 @@ export default {
           this.changeWidth = document.querySelector('.nav-show').clientWidth
         }
       }
+      const idx = this.menuList.findIndex((v) => {
+        return v.path === this.currentTab.path
+      })
+      if (idx === -1) {
+        this.currentTab = this.menuList[this.menuList.length - 1]
+      }
     },
     handleTabClick (item, idx) {
       this.currentTab = item
