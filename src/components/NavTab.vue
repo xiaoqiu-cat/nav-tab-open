@@ -76,6 +76,7 @@
 
 <script>
 import { makeRandomId } from '@/utils/index'
+import '@/assets/css/reset.css'
 export default {
   name: 'NavTab',
   data () {
