@@ -1,6 +1,6 @@
 {
   "name": "nav-tab-open",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "导航tab组件",
   "author": "LIU CHAOFEI",
   "license": "MIT",
@@ -31,7 +31,7 @@
     "element-ui": "^2.15.12",
     "less": "^4.1.3",
     "less-loader": "^11.1.0",
-    "nav-tab-open": "^0.1.7",
+    "nav-tab-open": "0.2.0",
     "qs": "^6.11.0",
     "vue": "^2.6.14"
   },

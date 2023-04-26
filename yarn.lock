@@ -4656,10 +4656,10 @@ natural-compare@^1.4.0:
   resolved "https://registry.npmmirror.com/natural-compare/-/natural-compare-1.4.0.tgz"
   integrity sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==
 
-nav-tab-open@^0.1.7:
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/nav-tab-open/-/nav-tab-open-0.1.7.tgz#8c6d7e89e1e57b8548f3c7d098fa43f0d486e0d2"
-  integrity sha512-t0dPEUA7HX4Fa/D6nVKO8MaShVZ3kMtqNXP5P24vfCwfF4VzF31rSpGo0oOJgZXl1hhwPiGNJ67EZKyYX519Hw==
+nav-tab-open@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/nav-tab-open/-/nav-tab-open-0.2.0.tgz#faf341f233f4f8101290f93aacca6611a2eac0d6"
+  integrity sha512-sdLUxOsdhGFY97qu9m8VleNDDl+ICNexXW7H04+383HbNGMk+Hsh+dBw7upRnErVhMfrnea6uPJi7wijjsAX1A==
   dependencies:
     axios "^1.3.2"
     core-js "^3.8.3"

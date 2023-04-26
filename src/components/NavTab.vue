@@ -15,9 +15,14 @@
             }}</span>
             <i class="close-btn" @click="handleClose(item)"></i>
             <div
-              class="context-menu"
+              :class="[
+                'context-menu',
+                {
+                  'context-menu-class':
+                    contextMenuVisible && contextMenuId === item.id,
+                },
+              ]"
               @click.stop
-              v-show="contextMenuVisible && contextMenuId === item.id"
             >
               <div class="context-menu-item" @click="handleRefreash(item)">
                 刷 新
@@ -46,7 +51,12 @@
         v-show="collapseMenuList.length"
         @click="handleShowApse"
       ></div>
-      <div class="nav-collapse" v-show="showApse && collapseMenuList.length">
+      <div
+        :class="[
+          'nav-collapse',
+          { showApseClass: showApse && collapseMenuList.length },
+        ]"
+      >
         <div class="apse-ul">
           <div
             class="apse-li-wrapper"
@@ -144,14 +154,13 @@ export default {
           const changeWidth = this.changeWidth
           let intVal = initWidth - changeWidth
           if (this.collapseMenuList.length) {
-            intVal = intVal - 30
+            const width = document.querySelector('.more-arrow').clientWidth
+            intVal = intVal - width
           }
-          console.log('initWidth', initWidth)
-          console.log('changeWidth', changeWidth)
-          if (intVal < 0) {
+          // console.log('intVal', intVal)
+          if (intVal <= 0) {
             this.collapseMenuList.push(val[val.length - 2])
             const lastItem = val[val.length - 1]
-            console.log('lastItem', lastItem)
             this.menuList.splice(val.length - 2, 1)
             this.changeWidth =
               this.changeWidth -
@@ -175,27 +184,27 @@ export default {
       const changeWidth = newWidth
       let intVal = initWidth - changeWidth
       if (this.collapseMenuList.length) {
-        intVal = intVal - 30
+        const width = document.querySelector('.more-arrow').clientWidth
+        intVal = intVal - width
       }
-      console.log('initWidth', initWidth)
-      console.log('changeWidth', changeWidth)
       console.log('intVal', intVal)
       if (intVal <= 0) {
         this.collapseMenuList.push(val[val.length - 2])
         const lastItem = val[val.length - 1]
-        console.log('lastItem', lastItem)
         this.menuList.splice(val.length - 2, 1)
         this.changeWidth =
           this.changeWidth -
           document.getElementById('li-' + lastItem.id).clientWidth
-        console.log('超出了')
+        // console.log('超出了')
       } else {
         const ulWidth = document.querySelector('.apse-ul').clientWidth
-        if (intVal > ulWidth) {
+        console.log('ulWidth', ulWidth)
+        if (intVal >= ulWidth) {
           const first = this.collapseMenuList.shift()
           if (first) {
             this.menuList.push(first)
           }
+        } else {
           this.changeWidth = document.querySelector('.nav-show').clientWidth
         }
       }
@@ -429,9 +438,12 @@ export default {
             width: 80px;
             background: #fff;
             border: 1px solid #ddd;
-            z-index: 999;
             border-radius: 5px;
             box-shadow: 0 0 5px #ddd;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.2s linear;
             .context-menu-item {
               height: 30px;
               line-height: 30px;
@@ -444,6 +456,12 @@ export default {
                 cursor: pointer;
               }
             }
+          }
+          .context-menu-class {
+            z-index: 999;
+            pointer-events: auto;
+            opacity: 1;
+            transition: opacity 0.3s linear;
           }
         }
         li:first-of-type {
@@ -482,7 +500,7 @@ export default {
     }
     .more-arrow {
       height: 27px;
-      padding: 0 13px 0 5px;
+      padding: 0 15px 0 5px;
       text-align: center;
       font-size: 14px;
       &:hover {
@@ -503,30 +521,31 @@ export default {
         position: relative;
         top: 25%;
         left: 50%;
-        margin-left: -4px;
+        margin-left: -2px;
       }
-      &::before {
-        content: " ";
-        display: inline-block;
-        height: 8px;
-        width: 8px;
-        border-width: 1px 1px 0 0;
-        border-color: #6a6c6e;
-        border-style: solid;
-        -webkit-transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
-        transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
-        position: relative;
-        top: 25%;
-        left: 50%;
-        margin-left: -4px;
-      }
+      // &::before {
+      //   content: " ";
+      //   display: inline-block;
+      //   height: 8px;
+      //   width: 8px;
+      //   border-width: 1px 1px 0 0;
+      //   border-color: #6a6c6e;
+      //   border-style: solid;
+      //   -webkit-transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+      //   transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+      //   position: relative;
+      //   top: 25%;
+      //   left: 50%;
+      //   margin-left: -4px;
+      // }
     }
 
     .nav-collapse {
       position: absolute;
       right: 10px;
       top: 35px;
-
+      opacity: 0;
+      transition: opacity 0.2s linear;
       .apse-ul {
         display: flex;
         flex-direction: column;
@@ -598,10 +617,14 @@ export default {
         }
       }
     }
+    .showApseClass {
+      opacity: 1;
+      transition: opacity 0.3s linear;
+    }
   }
 
   .tab-content {
-    height: 200px;
+    height: 300px;
     margin: 30px;
     color: #2c7ceb;
     display: flex;
@@ -610,6 +633,7 @@ export default {
   }
 
   .plus-tab {
+    margin-left: 100px;
   }
 }
 </style>
